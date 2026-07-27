@@ -22,4 +22,11 @@ function ArchiveButton({ id, onArchive, onUnarchive, archived }) {
     )
 }
 
+ArchiveButton.propTypes = {
+    id: PropTypes.string.isRequired,
+    onArchive: PropTypes.func,
+    onUnarchive: PropTypes.func,
+    archived: PropTypes.bool.isRequired,
+};
+
 export default ArchiveButton;

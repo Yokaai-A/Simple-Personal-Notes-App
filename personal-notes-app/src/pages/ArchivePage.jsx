@@ -1,5 +1,5 @@
 import React from 'react';
-import { getArchivedNotes, deleteNote, unarchiveNote, showFormattedDate } from '../utils/data';
+import { getArchivedNotes, deleteNote, unarchiveNote } from '../utils/data';
 import NoteList from '../components/NoteList';
 
 class ArchivePage extends React.Component { 
