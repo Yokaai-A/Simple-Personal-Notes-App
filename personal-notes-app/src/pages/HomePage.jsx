@@ -1,14 +1,17 @@
 import React from 'react';
-import { getActiveNotes, getArchivedNotes, deleteNote, archiveNote, unarchiveNote } from '../utils/data';
+import { Link } from 'react-router-dom';
+import { getActiveNotes, getArchivedNotes, deleteNote, archiveNote, unarchiveNote } from '../utils/network-data';
 import NoteList from '../components/NoteList';
+import { MdAdd } from 'react-icons/md';
 
 class HomePage extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      activeNotes: getActiveNotes(),
-      archivedNotes: getArchivedNotes(),
+      activeNotes: [],
+      archivedNotes: [],
+      initializing: true,
     };
 
     this.onDeleteHandler = this.onDeleteHandler.bind(this);
@@ -16,29 +19,41 @@ class HomePage extends React.Component {
     this.onUnarchiveHandler = this.onUnarchiveHandler.bind(this);
   }
 
-  refreshNotes() {
+  async componentDidMount() {
+    await this.refreshNotes();
+    this.setState({ initializing: false });
+  }
+
+  async refreshNotes() {
+    const { data: activeNotes } = await getActiveNotes();
+    const { data: archivedNotes } = await getArchivedNotes();
+
     this.setState({
-      activeNotes: getActiveNotes(),
-      archivedNotes: getArchivedNotes(),
+      activeNotes: activeNotes || [],
+      archivedNotes: archivedNotes || [],
     });
   }
 
-  onDeleteHandler(id) {
-    deleteNote(id);
-    this.refreshNotes();
+  async onDeleteHandler(id) {
+    await deleteNote(id);
+    await this.refreshNotes();
   }
 
-  onArchiveHandler(id) {
-    archiveNote(id);
-    this.refreshNotes();
+  async onArchiveHandler(id) {
+    await archiveNote(id);
+    await this.refreshNotes();
   }
 
-  onUnarchiveHandler(id) {
-    unarchiveNote(id);
-    this.refreshNotes();
+  async onUnarchiveHandler(id) {
+    await unarchiveNote(id);
+    await this.refreshNotes();
   }
 
   render() {
+    if (this.state.initializing) {
+      return <p className="notes-list__empty">Memuat catatan...</p>;
+    }
+
     const { activeNotes, archivedNotes } = this.state;
 
     return (
@@ -68,10 +83,15 @@ class HomePage extends React.Component {
             />
           )}
         </section>
+
+        <div className="homepage__action">
+          <Link to="/notes/new" className="action" title="Tambah Catatan">
+            <MdAdd />
+          </Link>
+        </div>
       </section>
     );
   }
 }
 
 export default HomePage;
-
